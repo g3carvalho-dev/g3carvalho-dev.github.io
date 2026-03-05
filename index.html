@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="main.js" defer></script>
+    <script src="api.js" defer></script>
+    <link rel="stylesheet" href="style.css">
+    <title>NetWatch</title>
+</head>
+<body>
+    <header>
+        <h1>NetWatch</h1>
+        <h1>🎬 Filmes Populares</h1>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Pesquisar filmes...">
+            <button onclick="buscar()">🔍</button>
+        </div>
+    </header>
+    <main>
+        <div id="status">Carregando...</div>
+        <div id="grid"></div>
+
+        <div id="modal-overlay" onclick="fecharModal(event)">
+            <div id="modal">
+                <button id="modal-close" onclick="fecharModal()">x</button>
+                <img id="modal-img" src="" alt="" />
+                <h2 id="modal-title"></h2>
+                <p id="modal-overview"></p>
+                <p style="margin-top: 0.5rem"><span style="color:#e8c97d">⭐</span> <span id="modal-note"></span></p>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2023 NetWatch. Todos os direitos reservados.</p>
+    </footer>
+</body>
+</html>
