@@ -2,7 +2,7 @@ const API_KEY = '52732b89370dfc8d97def371ede08297';
 const BASE = 'https://api.themoviedb.org/3/';
 const IMAGE_BASE = 'https://image.tmdb.org/t/p/w500';
 
-async function getFilms() {
+async function buscarFilmes(url) {
     document.getElementById('status').textContent = 'Carregando...';
     document.getElementById('grid').innerHTML = '';
 
@@ -42,11 +42,11 @@ function buscar() {
         return;
     }
 
-    getFilms(`${BASE}/search/movie?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(query)}`);
+    buscarFilmes(`${BASE}/search/movie?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(query)}`);
 }
 
 function carregarPopulares() {
-    getFilms(`${BASE}/movie/popular?api_key=${API_KEY}&language=pt-BR`);
+    buscarFilmes(`${BASE}/movie/popular?api_key=${API_KEY}&language=pt-BR`);
 }
 
 function abrirModal(filme) {
