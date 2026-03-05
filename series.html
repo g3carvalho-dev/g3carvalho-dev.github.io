@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Séries — NetWatch</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav>
+    <a class="nav-logo" href="index.html">NetWatch</a>
+    <ul class="nav-links">
+        <li><a href="index.html">Filmes</a></li>
+        <li><a href="series.html">Séries</a></li>
+        <li><a href="tendencias.html">Tendências</a></li>
+        <li><a href="busca.html">Buscar</a></li>
+    </ul>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="hero">
+    <div class="hero-backdrop"></div>
+    <div class="hero-content">
+        <span class="hero-badge">Série em destaque</span>
+        <h1 class="hero-title">—</h1>
+        <div class="hero-meta">
+            <span class="rating">—</span>
+        </div>
+        <p class="hero-overview"></p>
+        <a class="hero-btn" href="#">▶ Ver Detalhes</a>
+    </div>
+</section>
+
+<!-- No ar agora -->
+<section class="section">
+    <h2 class="section-title">📺 No Ar Agora</h2>
+    <div id="grid-ar" class="grid"></div>
+</section>
+
+<!-- Populares -->
+<section class="section">
+    <h2 class="section-title">🔥 Mais Populares</h2>
+    <div id="status">Carregando...</div>
+    <div id="grid" class="grid"></div>
+</section>
+
+<!-- Top Rated -->
+<section class="section">
+    <h2 class="section-title">⭐ Melhores Avaliadas</h2>
+    <div id="grid-top" class="grid"></div>
+</section>
+
+<!-- Modal -->
+<div id="modal-overlay" onclick="fecharModal(event)">
+    <div id="modal">
+        <button id="modal-close" onclick="fecharModal()">✕</button>
+        <img id="modal-img" src="" alt="">
+        <div class="modal-body">
+            <h2></h2>
+            <div class="modal-meta" id="modal-meta"></div>
+            <p id="modal-overview"></p>
+            <div class="modal-actions">
+                <a id="modal-detalhes-btn" href="#" class="btn-primary">Ver Detalhes</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>© 2025 NetWatch &mdash; Dados fornecidos por TMDB</p>
+</footer>
+
+<script src="js/api.js"></script>
+<script src="js/main.js"></script>
+<script>
+    async function init() {
+        mostrarSpinner();
+
+        const [populares, onAir, topRated] = await Promise.all([
+            getSeriesPopulares(),
+            getSeriesOnAir(),
+            getSeriesTopRated()
+        ]);
+
+        ocultarStatus();
+
+        const destaque = populares.results.find(s => s.backdrop_path);
+        renderizarHero(destaque);
+
+        renderizarGrid(onAir.results,     'grid-ar');
+        renderizarGrid(populares.results, 'grid');
+        renderizarGrid(topRated.results,  'grid-top');
+    }
+
+    init();
+</script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar — NetWatch</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav>
+    <a class="nav-logo" href="index.html">NetWatch</a>
+    <ul class="nav-links">
+        <li><a href="index.html">Filmes</a></li>
+        <li><a href="series.html">Séries</a></li>
+        <li><a href="tendencias.html">Tendências</a></li>
+        <li><a href="busca.html">Buscar</a></li>
+    </ul>
+</nav>
+
+<div class="search-hero">
+    <h1>Buscar</h1>
+    <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Filmes, séries, pessoas...">
+        <button onclick="executarBusca()">🔍 Buscar</button>
+    </div>
+</div>
+
+<section class="section">
+    <div id="status"></div>
+    <div id="grid" class="grid"></div>
+</section>
+
+<!-- Modal -->
+<div id="modal-overlay" onclick="fecharModal(event)">
+    <div id="modal">
+        <button id="modal-close" onclick="fecharModal()">✕</button>
+        <img id="modal-img" src="" alt="">
+        <div class="modal-body">
+            <h2></h2>
+            <div class="modal-meta" id="modal-meta"></div>
+            <p id="modal-overview"></p>
+            <div class="modal-actions">
+                <a id="modal-detalhes-btn" href="#" class="btn-primary">Ver Detalhes</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>© 2025 NetWatch &mdash; Dados fornecidos por TMDB</p>
+</footer>
+
+<script src="js/api.js"></script>
+<script src="js/main.js"></script>
+<script>
+    async function executarBusca() {
+        const query = $('search-input').value.trim();
+        if (!query) return;
+
+        mostrarSpinner();
+        $('grid').innerHTML = '';
+
+        const data = await searchMulti(query);
+        ocultarStatus();
+
+        // Filtra pessoas (media_type === 'person') pois não têm poster do mesmo jeito
+        const resultados = data.results.filter(r => r.media_type !== 'person' && r.poster_path);
+        renderizarGrid(resultados, 'grid');
+
+        if (resultados.length === 0) {
+            mostrarErro(`Nenhum resultado para "${query}".`);
+        }
+    }
+
+    initBuscaInput(executarBusca);
+
+    // Se veio com ?q= na URL, já busca
+    const params = new URLSearchParams(location.search);
+    if (params.get('q')) {
+        $('search-input').value = params.get('q');
+        executarBusca();
+    }
+</script>
+</body>
+</html>

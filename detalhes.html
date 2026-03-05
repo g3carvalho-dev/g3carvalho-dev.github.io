@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes — NetWatch</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav>
+    <a class="nav-logo" href="index.html">NetWatch</a>
+    <ul class="nav-links">
+        <li><a href="index.html">Filmes</a></li>
+        <li><a href="series.html">Séries</a></li>
+        <li><a href="tendencias.html">Tendências</a></li>
+        <li><a href="busca.html">Buscar</a></li>
+    </ul>
+</nav>
+
+<!-- Hero backdrop -->
+<div class="details-hero" id="details-hero">
+    <div class="details-backdrop" id="details-backdrop"></div>
+    <div class="details-content">
+        <div class="details-poster" id="details-poster">
+            <img id="details-poster-img" src="" alt="">
+        </div>
+        <div class="details-info">
+            <h1 id="details-title">—</h1>
+            <p class="tagline" id="details-tagline"></p>
+            <div class="details-tags" id="details-genres"></div>
+            <div class="details-stats" id="details-stats"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Sinopse -->
+<div class="details-overview" id="details-overview"></div>
+
+<!-- Elenco -->
+<section class="section">
+    <h2 class="section-title">🎭 Elenco Principal</h2>
+    <div class="cast-grid" id="cast-grid"></div>
+</section>
+
+<!-- Filmes similares -->
+<section class="section">
+    <h2 class="section-title">🎬 Similares</h2>
+    <div id="status"></div>
+    <div id="grid" class="grid"></div>
+</section>
+
+<!-- Modal (para similares) -->
+<div id="modal-overlay" onclick="fecharModal(event)">
+    <div id="modal">
+        <button id="modal-close" onclick="fecharModal()">✕</button>
+        <img id="modal-img" src="" alt="">
+        <div class="modal-body">
+            <h2></h2>
+            <div class="modal-meta" id="modal-meta"></div>
+            <p id="modal-overview"></p>
+            <div class="modal-actions">
+                <a id="modal-detalhes-btn" href="#" class="btn-primary">Ver Detalhes</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>© 2025 NetWatch &mdash; Dados fornecidos por TMDB</p>
+</footer>
+
+<script src="js/api.js"></script>
+<script src="js/main.js"></script>
+<script>
+    const params = new URLSearchParams(location.search);
+    const id   = params.get('id');
+    const tipo = params.get('tipo') || 'movie';
+
+    async function init() {
+        if (!id) { mostrarErro('ID não informado.', 'details-title'); return; }
+
+        const data = tipo === 'tv'
+            ? await getDetalhesSerie(id)
+            : await getDetalhesFilme(id);
+
+        // Título
+        $('details-title').textContent = getTitulo(data);
+        document.title = getTitulo(data) + ' — NetWatch';
+
+        // Tagline
+        if (data.tagline) $('details-tagline').textContent = `"${data.tagline}"`;
+
+        // Backdrop
+        if (data.backdrop_path) {
+            $('details-backdrop').style.backgroundImage = `url(${getBackdropUrl(data.backdrop_path)})`;
+        }
+
+        // Poster
+        if (data.poster_path) {
+            $('details-poster-img').src = getPosterUrl(data.poster_path);
+            $('details-poster-img').alt = getTitulo(data);
+        }
+
+        // Gêneros
+        const genresEl = $('details-genres');
+        (data.genres || []).forEach(g => {
+            const span = document.createElement('span');
+            span.className = 'tag';
+            span.textContent = g.name;
+            genresEl.appendChild(span);
+        });
+
+        // Stats
+        const nota   = data.vote_average?.toFixed(1) ?? '—';
+        const votos  = data.vote_count?.toLocaleString('pt-BR') ?? '—';
+        const ano    = getAno(data);
+        const duracao = data.runtime
+            ? `${Math.floor(data.runtime/60)}h ${data.runtime%60}m`
+            : (data.number_of_seasons ? `${data.number_of_seasons} temporada(s)` : '—');
+
+        $('details-stats').innerHTML = `
+            <div class="stat"><div class="stat-value">⭐ ${nota}</div><div class="stat-label">Avaliação</div></div>
+            <div class="stat"><div class="stat-value">${votos}</div><div class="stat-label">Votos</div></div>
+            <div class="stat"><div class="stat-value">${ano}</div><div class="stat-label">Ano</div></div>
+            <div class="stat"><div class="stat-value">${duracao}</div><div class="stat-label">Duração</div></div>
+        `;
+
+        // Sinopse
+        $('details-overview').textContent = data.overview || 'Sem descrição disponível.';
+
+        // Elenco
+        const castGrid = $('cast-grid');
+        const elenco = (data.credits?.cast || []).slice(0, 12);
+        elenco.forEach(pessoa => {
+            if (!pessoa.profile_path) return;
+            const div = document.createElement('div');
+            div.className = 'cast-card';
+            div.innerHTML = `
+                <img src="https://image.tmdb.org/t/p/w185${pessoa.profile_path}" alt="${pessoa.name}" loading="lazy">
+                <div class="cast-name">${pessoa.name}</div>
+                <div class="cast-char">${pessoa.character || ''}</div>
+            `;
+            castGrid.appendChild(div);
+        });
+
+        // Similares — busca inline via Worker
+        const similares = await apiFetch(`/${tipo}/${id}/similar?language=pt-BR`);
+        ocultarStatus();
+        renderizarGrid(similares.results, 'grid');
+    }
+
+    init();
+</script>
+</body>
+</html>

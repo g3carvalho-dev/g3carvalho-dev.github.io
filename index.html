@@ -3,36 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="js/api.js" defer></script>
-    <script src="js/main.js" defer></script>
-    <link rel="stylesheet" href="css/style.css">
     <title>NetWatch</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <header>
-        <h1>NetWatch</h1>
-        <h1>🎬 Filmes Populares</h1>
-        <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="Pesquisar filmes...">
-            <button onclick="buscar()">🔍</button>
-        </div>
-    </header>
-    <main>
-        <div id="status">Carregando...</div>
-        <div id="grid"></div>
+    <div id="page-content">
+        <nav>
+            <a class="nav-logo" href="index.html">NetWatch</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Filmes</a></li>
+                <li><a href="series.html">Séries</a></li>
+                <li><a href="tendencias.html">Tendências</a></li>
+                <li><a href="busca.html">Buscar</a></li>
+            </ul>
+        </nav>
 
-        <div id="modal-overlay" onclick="fecharModal(event)">
-            <div id="modal">
-                <button id="modal-close" onclick="fecharModal()">x</button>
-                <img id="modal-img" src="" alt="" />
-                <h2 id="modal-title"></h2>
+        <!-- Hero -->
+        <section class="hero" id="hero">
+            <div class="hero-backdrop"></div>
+            <div class="hero-content">
+                <span class="hero-badge">Filme em destaque</span>
+                <h1 class="hero-title">—</h1>
+                <div class="hero-meta">
+                    <span class="rating">—</span>
+                </div>
+                <p class="hero-overview"></p>
+                <a class="hero-btn" href="#">▶ Ver Detalhes</a>
+            </div>
+        </section>
+
+        <!-- Em cartaz -->
+        <section class="section">
+            <h2 class="section-title">🎬 Em Cartaz</h2>
+            <div id="grid-cartaz" class="grid"></div>
+        </section>
+
+        <!-- Populares -->
+        <section class="section">
+            <h2 class="section-title">🔥 Mais Populares</h2>
+            <div id="status">Carregando...</div>
+            <div id="grid" class="grid"></div>
+        </section>
+
+        <!-- Top Rated -->
+        <section class="section">
+            <h2 class="section-title">⭐ Melhores Avaliados</h2>
+            <div id="grid-top" class="grid"></div>
+        </section>
+
+        
+        <footer>
+            <p>© 2025 NetWatch &mdash; Dados fornecidos por TMDB</p>
+        </footer>
+    </div>
+    <!-- Modal -->
+    <div id="modal-overlay" onclick="fecharModal(event)">
+        <div id="modal">
+            <button id="modal-close" onclick="fecharModal()">✕</button>
+            <img id="modal-img" src="" alt="">
+            <div class="modal-body">
+                <h2></h2>
+                <div class="modal-meta" id="modal-meta"></div>
                 <p id="modal-overview"></p>
-                <p style="margin-top: 0.5rem"><span style="color:#e8c97d">⭐</span> <span id="modal-note"></span></p>
+                <div class="modal-actions">
+                    <a id="modal-detalhes-btn" href="#" class="btn-primary">Ver Detalhes</a>
+                </div>
             </div>
         </div>
-    </main>
-    <footer>
-        <p>&copy; 2023 NetWatch. Todos os direitos reservados.</p>
-    </footer>
+    </div>
+<script src="js/api.js"></script>
+<script src="js/main.js"></script>
+<script>
+    async function init() {
+        mostrarSpinner();
+
+        const [populares, nowPlaying, topRated] = await Promise.all([
+            getFilmesPopulares(),
+            getFilmesNowPlaying(),
+            getFilmesTopRated()
+        ]);
+
+        ocultarStatus();
+
+        // Hero: primeiro filme dos populares com backdrop
+        const destaque = populares.results.find(f => f.backdrop_path);
+        renderizarHero(destaque);
+
+        renderizarGrid(nowPlaying.results, 'grid-cartaz');
+        renderizarGrid(populares.results,  'grid');
+        renderizarGrid(topRated.results,   'grid-top');
+    }
+
+    init();
+</script>
 </body>
 </html>
