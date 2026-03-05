@@ -42,11 +42,11 @@ function buscar() {
         return;
     }
 
-    buscarFilmes(`${BASE}/search/movie?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(query)}`);
+    getFilms(`${BASE}/search/movie?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(query)}`);
 }
 
 function carregarPopulares() {
-    buscarFilmes(`${BASE}/movie/popular?api_key=${API_KEY}&language=pt-BR`);
+    getFilms(`${BASE}/movie/popular?api_key=${API_KEY}&language=pt-BR`);
 }
 
 function abrirModal(filme) {
