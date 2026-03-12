@@ -1,8 +1,3 @@
-// ─────────────────────────────────────────────────────────────
-//  main.js  —  Navegação, animações de página, DOM, eventos
-//  Depende de: api.js (carregado antes no HTML)
-// ─────────────────────────────────────────────────────────────
-
 // ── Utilitários de DOM ────────────────────────────────────────
 
 function $(id) { return document.getElementById(id); }

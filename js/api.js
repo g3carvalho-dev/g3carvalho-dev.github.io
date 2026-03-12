@@ -1,11 +1,3 @@
-// ─────────────────────────────────────────────────────────────
-//  api.js  —  Todas as chamadas ao TMDB (ou ao Worker proxy)
-//
-//  ⚠️  SEGURANÇA: Troque BASE_URL pela URL do seu Cloudflare Worker
-//      após seguir as instruções em worker.js.
-//      Enquanto desenvolve localmente, pode usar TMDB_DIRECT + API_KEY.
-// ─────────────────────────────────────────────────────────────
-
 const WORKER_URL  = 'https://netwatchtv.gabrielgarciagc175.workers.dev';
 const IMAGE_BASE  = 'https://image.tmdb.org/t/p/w500';
 const IMAGE_ORIG  = 'https://image.tmdb.org/t/p/original';
